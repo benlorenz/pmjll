@@ -1,0 +1,45 @@
+--- prefix/bin/polymake	2023-02-15 23:27:48.000000000 +0100
++++ prefix/bin/polymake	2023-02-15 23:43:55.000000000 +0100
+@@ -25,8 +25,16 @@
+ my @addlibs;
+ BEGIN {
+    use File::Basename qw( dirname );
+-   $InstallTop=dirname(dirname($0))."/share/polymake";
+-   $InstallArch=dirname(dirname($0))."/lib/polymake";
++   use Cwd qw(abs_path);
++   my $perl = abs_path(dirname($0)."/perl");
++   if ($perl ne $^X) {
++      # switch to correct perl:
++      exec $perl, $0, @ARGV;
++   }
++   my $Prefix = dirname(dirname(abs_path($0)));
++   $ENV{POLYMAKE_DEPS_TREE} = $Prefix;
++   $InstallTop="$Prefix/share/polymake";
++   $InstallArch="$Prefix/lib/polymake";
+    $Arch="darwin.aarch64";
+    @BundledExts=qw(cdd atint bliss flint libnormaliz lrs ppl scip soplex sympol);
+ }
+--- prefix/bin/polymake-config	2023-02-15 23:43:47.000000000 +0100
++++ prefix/bin/polymake-config	2023-02-15 23:47:17.000000000 +0100
+@@ -18,9 +18,11 @@
+ 
+ use strict;
+ use File::Basename qw( dirname );
++use Cwd qw(abs_path);
++
+ 
+ my $Version=4.9;
+-my $InstallArch=dirname(dirname($0))."/lib/polymake";
++my $InstallArch=abs_path(dirname(dirname($0)))."/lib/polymake";
+ 
+ sub usage {
+   print STDERR <<'.';
+@@ -41,7 +43,7 @@
+ 
+ @ARGV || usage;
+ 
+-my $root=dirname(dirname($0))."/share/polymake";
++my $root=abs_path(dirname(dirname($0)))."/share/polymake";
+ do "$root/support/install_utils.pl";
+ die $@ if $@;
+ my %ConfigFlags=load_config_file("$InstallArch/config.ninja", $root);
