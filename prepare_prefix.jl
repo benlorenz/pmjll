@@ -9,5 +9,6 @@ artifact_paths = collect_artifact_paths(["polymake_jll"])
 deploy_artifact_paths(prefix, artifact_paths; strategy=:copy)
 
 println("For sources see:")
-print(join(map(x->"https://github.com/JuliaBinaryWrappers/$(x.name).jl",collect(keys(artifact_paths))),"\n"))
+println("   ".join(map(x->"https://github.com/JuliaBinaryWrappers/$(x.name).jl",collect(keys(artifact_paths))),"\n   "))
+println();
 
