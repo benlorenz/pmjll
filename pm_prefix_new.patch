@@ -16,7 +16,7 @@
 +   $ENV{POLYMAKE_DEPS_TREE} = $Prefix;
 +   $InstallTop="$Prefix/share/polymake";
 +   $InstallArch="$Prefix/lib/polymake";
-    $Arch="darwin.aarch64";
+    $Arch="darwin.PMARCH";
     @BundledExts=qw(cdd atint bliss flint libnormaliz lrs ppl scip soplex sympol);
  }
 --- prefix/bin/polymake-config	2023-02-15 23:43:47.000000000 +0100

@@ -40,7 +40,7 @@ cd $basedir
 
 $julia populate_prefix.jl "$prefix" "$arch"
 
-patch -d $prefix -p1 < pm_prefix_new.patch
+sed -e "s/PMARCH/$arch/g" pm_prefix_new.patch | patch -d $prefix -p1
 
 mkdir -p $prefix/deps/
 for name in FLINT_jll GMP_jll MPFR_jll PPL_jll Perl_jll SCIP_jll bliss_jll boost_jll cddlib_jll lrslib_jll normaliz_jll; do 
