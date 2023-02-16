@@ -1,7 +1,7 @@
 using Pkg;
 using Base.BinaryPlatforms;
 Pkg.activate(; temp=true);
-Pkg.add(url="https://github.com/JuliaPackaging/JLLPrefixes.jl");
+Pkg.add(url="https://github.com/JuliaPackaging/JLLPrefixes.jl", rev="863b60c");
 
 using JLLPrefixes
 
@@ -9,7 +9,7 @@ prefix=ARGS[1]
 arch=ARGS[2]
 
 platform=Platform(arch, "macos")
-artifact_paths = collect_artifact_paths(["polymake_jll"]; platform=platform)
+artifact_paths = collect_artifact_paths(["polymake_jll", "Ninja_jll"]; platform=platform)
 deploy_artifact_paths(prefix, artifact_paths; strategy=:copy)
 
 println("For sources see:")
