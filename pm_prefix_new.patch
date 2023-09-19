@@ -22,8 +22,8 @@
 +   $ENV{TERMINFO_DIRS} = "$prefix/share/terminfo";
 +   $InstallTop="$prefix/share/polymake";
 +   $InstallArch="$prefix/lib/polymake";
-    $Arch="darwin.PMARCH";
-    @BundledExts=qw(cdd atint bliss flint libnormaliz lrs ppl scip soplex sympol);
+    $Arch="PMJLL_ARCH";
+    @BundledExts=qw(bliss cdd flint libnormaliz lrs ppl scip soplex sympol atint);
  }
 --- prefix/bin/polymake-config	2023-02-15 23:43:47.000000000 +0100
 +++ prefix/bin/polymake-config	2023-02-15 23:47:17.000000000 +0100
@@ -34,7 +34,7 @@
 +use Cwd qw(abs_path);
 +
  
- my $Version=4.9;
+ my $Version=PMJLL_VERSION;
 -my $InstallArch=dirname(dirname($0))."/lib/polymake";
 +my $InstallArch=dirname(dirname(abs_path($0)))."/lib/polymake";
  
