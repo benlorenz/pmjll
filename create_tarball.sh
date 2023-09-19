@@ -63,4 +63,6 @@ mkdir -p $fullprefix/deps/
 for name in FLINT_jll GMP_jll MPFR_jll PPL_jll Perl_jll SCIP_jll bliss_jll boost_jll cddlib_jll lrslib_jll normaliz_jll; do 
    ln -s ../ $fullprefix/deps/$name
 done
+ver=$(echo $version)
 
+tar --transform "s/^$os-$arch/polymake-$ver-$os-$arch/" -czf polymake-$ver-$os-$arch.tar.gz -C $prefix $os-$arch
