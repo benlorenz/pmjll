@@ -19,7 +19,7 @@
 +   my $prefix = dirname(dirname(abs_path($0)));
 +   $ENV{POLYMAKE_DEPS_TREE} = $prefix;
 +   $ENV{PATH} = "$prefix/bin:$ENV{PATH}";
-+   $ENV{TERMINFO_DIRS} = "$prefix/share/terminfo";
++   $ENV{TERMINFO_DIRS} = "$prefix/share/terminfo:/etc/terminfo";
 +   $InstallTop="$prefix/share/polymake";
 +   $InstallArch="$prefix/lib/polymake";
     $Arch="PMJLL_ARCH";
