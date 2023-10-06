@@ -8,7 +8,7 @@ basedir=$(dirname $0)
 prefix=/tmp/pmjll
 julia=julia
 arch="x86_64"
-os="darwin"
+os="macos"
 
 args=`getopt a:j:p:o:h $*`
 set -- $args
