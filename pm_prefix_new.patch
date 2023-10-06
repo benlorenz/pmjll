@@ -1,0 +1,69 @@
+--- prefix/bin/polymake	2023-02-15 23:27:48.000000000 +0100
++++ prefix/bin/polymake	2023-02-15 23:43:55.000000000 +0100
+@@ -25,8 +25,24 @@
+ my @addlibs;
+ BEGIN {
+    use File::Basename qw( dirname );
+-   $InstallTop=dirname(dirname($0))."/share/polymake";
+-   $InstallArch=dirname(dirname($0))."/lib/polymake";
++   use Cwd qw(abs_path);
++   my $perl = dirname(abs_path($0))."/perl";
++   my $magic = "PoLyMaKeReExEc";
++   if ($perl ne $^X) {
++      @ARGV > 0 && $ARGV[0] eq $magic && 
++         die "Re-executing correct perl $perl from $^X failed";
++      # switch to correct perl:
++      exec $perl, $0, $magic, @ARGV;
++   }
++   @ARGV > 0 && $ARGV[0] eq $magic && shift @ARGV;
++   my $prefix = dirname(dirname(abs_path($0)));
++   $ENV{POLYMAKE_DEPS_TREE} = $prefix;
++   $ENV{PATH} = "$prefix/bin:$ENV{PATH}";
++   delete $ENV{LD_LIBRARY_PATH};
++   delete $ENV{DYLD_LIBRARY_PATH};
++   $ENV{TERMINFO_DIRS} = "$prefix/share/terminfo:/etc/terminfo";
++   $InstallTop="$prefix/share/polymake";
++   $InstallArch="$prefix/lib/polymake";
+    $Arch="PMJLL_ARCH";
+    @BundledExts=qw(bliss cdd flint libnormaliz lrs ppl scip soplex sympol atint);
+ }
+--- prefix/bin/polymake-config	2023-02-15 23:43:47.000000000 +0100
++++ prefix/bin/polymake-config	2023-02-15 23:47:17.000000000 +0100
+@@ -18,9 +18,11 @@
+ 
+ use strict;
+ use File::Basename qw( dirname );
++use Cwd qw(abs_path);
++
+ 
+ my $Version=PMJLL_VERSION;
+-my $InstallArch=dirname(dirname($0))."/lib/polymake";
++my $InstallArch=dirname(dirname(abs_path($0)))."/lib/polymake";
+ 
+ sub usage {
+   print STDERR <<'.';
+@@ -41,7 +43,7 @@
+ 
+ @ARGV || usage;
+ 
+-my $root=dirname(dirname($0))."/share/polymake";
++my $root=dirname(dirname(abs_path($0)))."/share/polymake";
+ do "$root/support/install_utils.pl";
+ die $@ if $@;
+ my %ConfigFlags=load_config_file("$InstallArch/config.ninja", $root);
+--- prefix/share/polymake/perllib/Polymake/Main.pm.orig	2023-02-16 00:26:39.000000000 +0100
++++ prefix/share/polymake/perllib/Polymake/Main.pm	2023-02-16 00:27:52.000000000 +0100
+@@ -22,6 +22,13 @@
+ sub import {
+    (undef, my ($user_opts, $must_reset_SIGCHLD)) = @_;
+ 
++   use File::Basename qw( dirname );
++   use Cwd qw(abs_path);
++   my $prefix = dirname(dirname(abs_path($^X)));
++   $ENV{POLYMAKE_DEPS_TREE} = $prefix;
++   $ENV{PATH} = "$prefix/bin:$ENV{PATH}";
++   $ENV{TERMINFO_DIRS} = "$prefix/share/terminfo";
++
+    # this guarantees initialization of internal structures for signal handling
+    local $SIG{USR1} = 'IGNORE';
+ 
