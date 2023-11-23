@@ -10,7 +10,7 @@ julia=julia
 arch="x86_64"
 os="macos"
 
-args=`getopt a:j:p:o:h $*`
+args=`getopt a:j:p:o:v:h $*`
 set -- $args
 while :; do
    case "$1" in
@@ -28,6 +28,10 @@ while :; do
          ;;
       -o)
          os="$2"
+         shift; shift
+         ;;
+      -v)
+         pmver="$2"
          shift; shift
          ;;
       -h)
@@ -48,9 +52,9 @@ else
    fullarch=$arch
 fi
 
-$julia populate_prefix.jl --prefix "$prefix" --arch "$arch" --os "$os"
+$julia populate_prefix.jl --prefix "$prefix" --arch "$arch" --os "$os" --pmver "$pmver"
 
-version=$(grep 'Version=.*;' $fullprefix/bin/polymake-config | sed -e 's/^.*=\(.*\);/\1/')
+version=$(grep 'Version=.*;' $fullprefix/bin/polymake-config | sed -e 's/^.*="\?\([^"]*\)"\?;/\1/' )
 
 sed -e "s/PMJLL_ARCH/$fullarch/g;" \
     -e "s/PMJLL_VERSION/$version/g" \
@@ -65,4 +69,10 @@ for name in FLINT_jll GMP_jll MPFR_jll PPL_jll Perl_jll SCIP_jll bliss_jll boost
 done
 ver=$(echo $version)
 
-tar --transform "s/^$os-$arch/polymake-$ver-$os-$arch/" -czf polymake-$ver-$os-$arch.tar.gz -C $prefix $os-$arch
+tar \
+   --sort=name \
+   --owner=0 --group=0 --numeric-owner \
+   --mtime='1970-01-01 00:00:00Z' \
+   --transform "s/^$os-$arch/polymake-$ver-$os-$arch/" \
+   -czf polymake-$ver-$os-$arch.tar.gz \
+   -C $prefix $os-$arch

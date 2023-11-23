@@ -22,6 +22,10 @@ function parse_commandline()
             help = "operating system (linux, macos)"
             arg_type = String
             default = "macos"
+        "--pmver"
+            help = "polymake version"
+            arg_type = String
+            default = ""
     end
     return parse_args(s)
 end
@@ -31,9 +35,20 @@ parsed_args = parse_commandline()
 prefix = parsed_args["prefix"]
 arch = parsed_args["arch"]
 os = parsed_args["os"]
+pmver = parsed_args["pmver"]
 
 platform = Platform(arch, os)
-artifact_paths = collect_artifact_paths(["polymake_jll", "Ninja_jll"]; platform=platform)
+deps = [PackageSpec(; name="Ninja_jll")]
+if pmver != ""
+   pmver = VersionNumber(pmver)
+   if pmver.major < 100
+      pmver = VersionNumber(100*pmver.major, 100*pmver.minor)
+   end
+   push!(deps, PackageSpec(; name="polymake_jll", version=Pkg.Types.VersionSpec(pmver)))
+else
+   push!(deps, PackageSpec(; name="polymake_jll"))
+end
+artifact_paths = collect_artifact_paths(deps; platform=platform)
 deploy_artifact_paths(joinpath(prefix,"$os-$arch"), artifact_paths; strategy=:copy)
 println("done: ", joinpath(prefix,"$os-$arch"))
 
