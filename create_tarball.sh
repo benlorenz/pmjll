@@ -54,7 +54,7 @@ fi
 
 $julia populate_prefix.jl --prefix "$prefix" --arch "$arch" --os "$os" --pmver "$pmver"
 
-version=$(grep 'Version=.*;' $fullprefix/bin/polymake-config | sed -e 's/^.*="\?\([^"]*\)"\?;/\1/' )
+version=$(grep 'Version=.*;' $fullprefix/bin/polymake-config | sed -e 's/^.*=\(.*\);/\1/' )
 
 sed -e "s/PMJLL_ARCH/$fullarch/g;" \
     -e "s/PMJLL_VERSION/$version/g" \
@@ -67,7 +67,7 @@ mkdir -p $fullprefix/deps/
 for name in FLINT_jll GMP_jll MPFR_jll PPL_jll Perl_jll SCIP_jll bliss_jll boost_jll cddlib_jll lrslib_jll normaliz_jll; do 
    ln -s ../ $fullprefix/deps/$name
 done
-ver=$(echo $version)
+ver=$(echo $version | sed 's/^"//' |sed 's/"$//')
 
 tar \
    --sort=name \
